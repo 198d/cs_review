@@ -1,0 +1,10 @@
+[package]
+name = "cs_review"
+version = "0.1.0"
+authors = ["John MacKenzie <john@nineteeneightd.com>"]
+
+
+[dependencies]
+rand = "0.3"
+time = "0.1"
+ndarray = "0.7.2"
