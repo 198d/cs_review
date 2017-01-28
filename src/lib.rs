@@ -5,3 +5,4 @@ extern crate ndarray;
 
 
 pub mod sorting;
+pub mod trees;
