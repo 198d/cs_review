@@ -1,19 +1,20 @@
 /// Performs an in-place selection sort
-pub fn selection_sort(mut numbers: &mut [i32]) {
+pub fn selection_sort<T>(mut data: &mut [T])
+    where T: PartialOrd {
   let mut i = 0;
 
-  while i < numbers.len() {
+  while i < data.len() {
     let mut j = i;
     let mut min = i;
 
-    while j < numbers.len() {
-      if numbers[j] < numbers[min] {
+    while j < data.len() {
+      if data[j] < data[min] {
         min = j;
       }
       j += 1;
     }
 
-    numbers.swap(i, min);
+    data.swap(i, min);
 
     i += 1;
   }
@@ -21,14 +22,15 @@ pub fn selection_sort(mut numbers: &mut [i32]) {
 
 
 /// Performs an in-place insertion sort
-pub fn insertion_sort(mut numbers: &mut [i32]) {
+pub fn insertion_sort<T>(mut data: &mut [T])
+    where T: PartialOrd {
   let mut i = 1;
 
-  while i < numbers.len() {
+  while i < data.len() {
     let mut j = i;
 
-    while j > 0 && numbers[j-1] > numbers[j] {
-      numbers.swap(j, j-1);
+    while j > 0 && data[j-1] > data[j] {
+      data.swap(j, j-1);
       j -= 1;
     }
 
@@ -38,18 +40,20 @@ pub fn insertion_sort(mut numbers: &mut [i32]) {
 
 
 /// Performs an in-place merge sort
-pub fn merge_sort(mut numbers: &mut [i32]) {
-  fn _merge_sort(mut auxilary: &mut [i32], mut numbers: &mut [i32], low: usize, high: usize) {
+pub fn merge_sort<T>(mut data: &mut [T])
+    where T: PartialOrd + Copy {
+  fn _merge_sort<T>(mut auxilary: &mut [T], mut data: &mut [T], low: usize, high: usize)
+      where T: PartialOrd + Copy {
     if low < high {
       let size = high - low;
       let mid_point = low + size / 2;
 
-      _merge_sort(&mut auxilary, &mut numbers, low, mid_point);
-      _merge_sort(&mut auxilary, &mut numbers, mid_point + 1, high);
+      _merge_sort(&mut auxilary, &mut data, low, mid_point);
+      _merge_sort(&mut auxilary, &mut data, mid_point + 1, high);
 
       let mut copy_index = low;
       while copy_index <= high {
-        auxilary[copy_index] = numbers[copy_index];
+        auxilary[copy_index] = data[copy_index];
         copy_index += 1;
       }
 
@@ -59,11 +63,11 @@ pub fn merge_sort(mut numbers: &mut [i32]) {
 
       while sorted_index <= high {
         if left_index > mid_point || right_index <= high && auxilary[right_index] < auxilary[left_index] {
-          numbers[sorted_index] = auxilary[right_index];
+          data[sorted_index] = auxilary[right_index];
           right_index += 1;
         }
         else if right_index > high || auxilary[left_index] < auxilary[right_index] {
-          numbers[sorted_index] = auxilary[left_index];
+          data[sorted_index] = auxilary[left_index];
           left_index += 1;
         }
         sorted_index += 1;
@@ -71,14 +75,17 @@ pub fn merge_sort(mut numbers: &mut [i32]) {
     }
   }
 
-  let mut auxilary = vec![0; numbers.len()];
-  let high_index = numbers.len() - 1;
-  _merge_sort(&mut auxilary, &mut numbers, 0, high_index);
+  if data.len() > 0 {
+    let mut auxilary = vec![data[0]; data.len()];
+    let high_index = data.len() - 1;
+    _merge_sort(&mut auxilary, &mut data, 0, high_index);
+  }
 }
 
 
 /// Performs an in-place heap sort
-pub fn heap_sort(mut numbers: &mut [i32]) {
+pub fn heap_sort<T>(mut data: &mut [T])
+    where T: PartialOrd {
   fn parent(index: usize) -> usize {
     (index - 1) / 2
   }
@@ -91,15 +98,17 @@ pub fn heap_sort(mut numbers: &mut [i32]) {
     2 * index + 2
   }
 
-  fn heapify(mut numbers: &mut [i32]) {
-    let numbers_len = numbers.len();
-    let parents_len = parent(numbers_len - 1) + 1;
+  fn heapify<T>(mut data: &mut [T])
+      where T: PartialOrd {
+    let data_len = data.len();
+    let parents_len = parent(data_len - 1) + 1;
     for index in (0..parents_len).rev() {
-      sift_down(&mut numbers, index, numbers_len - 1);
+      sift_down(&mut data, index, data_len - 1);
     }
   }
 
-  fn sift_down(mut numbers: &mut [i32], start: usize, end: usize) {
+  fn sift_down<T>(mut data: &mut [T], start: usize, end: usize)
+      where T: PartialOrd {
     let mut root = start;
 
     while left_child(root) <= end {
@@ -107,11 +116,11 @@ pub fn heap_sort(mut numbers: &mut [i32]) {
       let right_index = right_child(root);
       let mut swap_candidate = root;
 
-      if numbers[left_index] > numbers[swap_candidate] {
+      if data[left_index] > data[swap_candidate] {
         swap_candidate = left_index;
       }
 
-      if right_index <= end && numbers[right_index] > numbers[swap_candidate] {
+      if right_index <= end && data[right_index] > data[swap_candidate] {
         swap_candidate = right_index;
       }
 
@@ -119,16 +128,16 @@ pub fn heap_sort(mut numbers: &mut [i32]) {
         break;
       }
 
-      numbers.swap(root, swap_candidate);
+      data.swap(root, swap_candidate);
       root = swap_candidate;
     }
   }
 
-  heapify(&mut numbers);
+  heapify(&mut data);
 
-  for index in (1..numbers.len()).rev() {
-    numbers.swap(index, 0);
-    sift_down(&mut numbers, 0, index - 1);
+  for index in (1..data.len()).rev() {
+    data.swap(index, 0);
+    sift_down(&mut data, 0, index - 1);
   }
 }
 
